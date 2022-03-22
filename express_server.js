@@ -7,7 +7,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 
 const generateRandomString = function() {
-  let randomChar = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2).toLocaleUpperCase();
+  let randomChar = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2).toUpperCase();
   let output = '';
   for (let i = 0; i < 6; i++) {
     output += randomChar.charAt(Math.floor(Math.random() * randomChar.length));
