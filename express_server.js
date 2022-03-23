@@ -1,9 +1,11 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const morgan = require('morgan');
 const PORT = 8080;
 
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(morgan('tiny'));
 app.set('view engine', 'ejs');
 
 const generateRandomString = function() {
@@ -36,7 +38,6 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  console.log(`updating ${req.params.shortURL} to ${req.body.newURL}`)
   urlDatabase[shortURL] = req.body.newURL;
   res.redirect(`/urls/${shortURL}`);
 });
