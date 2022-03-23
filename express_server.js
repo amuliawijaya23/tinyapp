@@ -49,11 +49,6 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.post('/login', (req, res) => {
-  res.cookie("username", req.body.username);
-  res.redirect('/urls');
-});
-
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   urlDatabase[shortURL] = req.body.newURL;
@@ -78,6 +73,11 @@ app.get('/u/:shortURL', (req, res) => {
   res.redirect('/urls');
   }
   res.redirect(longURL);
+});
+
+app.post('/login', (req, res) => {
+  res.cookie("username", req.body.username);
+  res.redirect('/urls');
 });
 
 app.post("/logout", (req, res) => {
