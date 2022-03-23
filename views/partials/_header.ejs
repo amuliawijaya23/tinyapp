@@ -1,5 +1,5 @@
 <header>
-  <nav class="navbar navbar-expand-md navbar-dark bg-success">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <a class="navbar-brand" href="/">TinyApp</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -11,20 +11,20 @@
       </div>
     </div>
     <% if (!username){ %>
-    <form class="form-inline" style="margin: auto; width: auto" action="/login" method="POST">
+    <form class="form-inline" style="margin: auto" action="/login" method="POST">
       <div class="input-group">
         <div class="input-group-prepend">
           <span class="input-group-text" id="basic-addon1">@</span>
         </div>
-        <input type="text" class="form-control" name="username" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+        <input type="text" class="form-control" name="username" placeholder="Username">
       </div>
-      <button class="btn btn-primary my-2 my-sm-0" type="submit">Sign In</button>
+      <button class="btn btn-primary ml-1 my-sm-0" type="submit">Sign In</button>
     </form>
     <% } else if (username){ %>
-      <form class="form-inline" action="/logout" method="POST" style="padding-left: 10px; margin: 5px;">
-        <div>
-          <h5> Signed in as <b><%= username %></b></h5>
-          <button type="submit" class="btn btn-primary my-2 my-sm-0">Logout</button>
+      <form class="form-inline" action="/logout" method="POST" style="margin: auto;">
+        <div class="d-flex justify-content-end">
+          <h5 class="text-light bg-dark my-2"> Signed in as: <b> <%= username %> </b> </h5>
+          <button type="submit" class="btn btn-primary ml-2 my-sm-0">Logout</button>
         </div>
       </form>
       <% } %>
