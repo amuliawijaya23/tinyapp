@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
+const bcrypt = require('bcryptjs');
 const PORT = 8080;
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -46,12 +47,12 @@ const users = {
   'admin': {
     'id': 'admin',
     'email': 'admin@tinyapp.com',
-    'password': 'superpassword'
+    'password': '$2a$10$fVhgZ/scnablDOY9CAjOae6w/oWJTrp62/ZBAB.9C2f01qoQ.zjFS'
   },
   'jamesBly': {
     'id': 'jamesBly',
     'email': 'jamesbly@example.com',
-    'password': 'password123'
+    'password': '$2a$10$p2FCIn2WOwC9gnrGfHBj1uhdbYqICcFIPSdIPUvfiuNnWTeT5ZkvS'
   }
 };
 
@@ -171,7 +172,8 @@ app.post("/urls", (req, res) => {
 app.post('/register', (req, res) => {
   const userID = req.body.userID;
   const email = req.body.email;
-  const password = req.body.password;
+  const password = req.body.password
+  const hashedPassword = bcrypt.hashSync(password, 10);
   if (!userID || !email || !password) {
     return res.sendStatus(403); // create a page to show message!
   };
@@ -182,7 +184,7 @@ app.post('/register', (req, res) => {
     users[userID] = {
       'id': userID,
       'email': email,
-      'password': password
+      'password': hashedPassword
     };
     res.cookie('user_id', userID);
     console.log(`registered new User:`, JSON.stringify(users[userID]));
@@ -199,7 +201,7 @@ app.post('/login', (req, res) => {
   }
   if (verifyEmail(usernameInput)) {
     userID = verifyEmail(usernameInput);
-    if (users[userID].password === passwordInput) {
+    if (bcrypt.compare(passwordInput, users[userID].password)) {
       res.cookie('user_id', userID);
       res.redirect('/urls');
       return;
@@ -209,7 +211,7 @@ app.post('/login', (req, res) => {
   }
   if (verifyUserID(usernameInput)) {
     userID = verifyUserID(usernameInput);
-    if(users[userID].password === passwordInput) {
+    if(bcrypt.compare(passwordInput, users[userID].password)) {
       res.cookie('user_id', userID);
       res.redirect('/urls');
       return;

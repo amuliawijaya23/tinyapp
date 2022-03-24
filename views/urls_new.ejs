@@ -44,7 +44,7 @@
               <% if(urls[url].userID === username) { %>
             <tr>
               <td><a href="/urls/<%= url %>"> <%= url %> </a></td>
-              <td><a href="<%= urls[url] %>"> <%= urls[url].longURL %> </a></td>
+              <td><a href="<%= urls[url].longURL %>"> <%= urls[url].longURL %> </a></td>
               <td><form method="GET" action="/urls/<%= url %>"><button type="submit" class="btn btn-primary">Edit</button></form></td>
               <td><form method="POST" action="/urls/<%= url %>/delete"><button type="submit" class="btn btn-danger">Delete</button></form></td>
             </tr>
