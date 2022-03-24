@@ -13,27 +13,47 @@
     <%- include('partials/_header') %>
   </header>
   <main style="margin: 1em;">
-    <h3>My URLs</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Short URL</th>
-          <th scope="col">Long URL</th>
-          <th scope="col">Edit</th>
-          <th scope="col">Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for(let url in urls) { %>
-          <tr>
-            <td><a href="/urls/<%= url %>"> <%= url %> </a></td>
-            <td><a href="<%= urls[url] %>"> <%= urls[url] %> </a></td>
-            <td><form method="GET" action="/urls/<%= url %>"><button type="submit" class="btn btn-primary">Edit</button></form></td>
-            <td><form method="POST" action="/urls/<%= url %>/delete"><button type="submit" class="btn btn-danger">Delete</button></form></td>
-          </tr>
-        <% } %>
-      </tbody>
-    </table>
+    <% if (username) { %>
+      <div class="card">
+        <div class="card-header text-center">
+          <h3>My URLs</h3>
+        </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Short URL</th>
+                <th scope="col">Long URL</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+            <% for(let url in urls) { %>
+              <% if(urls[url].userID === username) { %>
+            <tr>
+              <td><a href="/urls/<%= url %>"> <%= url %> </a></td>
+              <td><a href="<%= urls[url] %>"> <%= urls[url].longURL %> </a></td>
+              <td><form method="GET" action="/urls/<%= url %>"><button type="submit" class="btn btn-primary">Edit</button></form></td>
+              <td><form method="POST" action="/urls/<%= url %>/delete"><button type="submit" class="btn btn-danger">Delete</button></form></td>
+            </tr>
+              <% } %>
+            <% } %>
+            </tbody>
+          </table>
+        </div>
+    <% } else { %>
+    <div class="card text-center">
+      <div class="card-header">
+        <h3>TinyURL</h3>
+      </div>
+      <div class="card-body">
+        <h4 class="card-title">Access Denied!</h4>
+        <p class="card-text">You must be logged in to use this feature.</p>
+        <form method="GET" action="/login"><button type="submit" class="btn btn-primary">Sign In</button></form>
+        <footer class="footer mt-3"><p class="card-text">Don't have an account? Sign up <a href="/register">here</a>!</p></footer>
+      </div>
+    </div>
+    <% } %>
   </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

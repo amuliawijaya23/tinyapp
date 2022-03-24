@@ -4,20 +4,26 @@
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-item nav-link" href="/urls">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-      </div>
-    </div>
     <% if (!username){ %>
-    <form class="form-inline" style="margin: auto" action="/login" method="GET">
-      <button class="btn btn-primary mr-1 my-sm-1" type="submit">Sign In</button>
-    </form>
-    <form class="form-inline" style="margin: auto" action="/register" method="GET">
-      <button class="btn btn-primary ml-1 my-sm-1" type="submit">Sign Up</button>
-    </form>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="/urls">URLs</a>
+          <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        </div>
+      </div>
+      <form class="form-inline" action="/login" method="GET">
+        <button class="btn btn-primary mr-1 ml-sm-2" type="submit">Sign In</button>
+      </form>
+      <form class="form-inline" action="/register" method="GET">
+        <button class="btn btn-primary ml-1 my-sm-2" type="submit">Sign Up</button>
+      </form>
     <% } else if (username){ %>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="/urls">My URLs</a>
+          <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        </div>
+      </div>
       <form class="form-inline" action="/logout" method="POST" style="margin: auto;">
         <div class="d-flex justify-content-end">
           <h5 class="text-light bg-dark my-2"> Signed in as: <b> <%= username %> </b> </h5>
