@@ -79,8 +79,9 @@ app.get('/', (req, res) => {
   }
   if (req.session.user_id) {
     res.redirect('/urls');
+  } else {
+    res.redirect('/login');
   }
-  res.redirect('/login');
 });
 
 app.get("/register", (req, res) => {
@@ -89,8 +90,9 @@ app.get("/register", (req, res) => {
   }
   if (req.session.user_id) {
     res.redirect('/urls');
+  } else {
+    res.render("register", templateVars);
   }
-  res.render("register", templateVars);
 });
 
 app.get("/login", (req, res) => {
@@ -99,8 +101,9 @@ app.get("/login", (req, res) => {
   }
   if(req.session.user_id) {
     res.redirect('urls');
+  } else {
+    res.render('login', templateVars);
   }
-  res.render('login', templateVars);
 });
 
 app.get('/urls', (req, res) => {
@@ -118,8 +121,9 @@ app.get("/urls/new", (req, res) => {
   }
   if (req.session.user_id) {
     res.render("urls_new", templateVars);
+  } else {
+    res.redirect('/login');
   }
-  res.redirect('/login');
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -149,16 +153,18 @@ app.post("/urls/:shortURL", (req, res) => {
       urlDatabase[shortURL]['longURL'] = req.body.newURL;
       res.redirect(`/urls/${shortURL}`);
     } 
+  } else {
+    res.sendStatus(403);
   }
-  res.sendStatus(403);
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   if (req.session.user_id) {
     delete urlDatabase[req.params.shortURL];
     res.redirect('/urls')
+  } else {
+    res.sendStatus(403);
   }
-  res.sendStatus(403);
 });
 
 app.post("/urls", (req, res) => {
@@ -170,8 +176,9 @@ app.post("/urls", (req, res) => {
       'userID': req.session.user_id
     }
     res.redirect(`/urls/${shortURL}`);
+  } else {
+    res.sendStatus(403);
   }
-  res.sendStatus(403);
 });
 
 app.post('/register', (req, res) => {
