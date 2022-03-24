@@ -4,49 +4,23 @@ const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const morgan = require('morgan');
 const bcrypt = require('bcryptjs');
+const validator = require('validator');
 const PORT = 8080;
+const {
+  generateRandomString, 
+  verifyEmail, 
+  verifyUserID, 
+  validateURL
+} = require('./helper');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('tiny'));
 app.set('view engine', 'ejs');
-
 app.use(cookieSession({
   'name': 'session',
   'keys': ['key1', 'key2', 'key3'],
   'maxAge': 24 * 60 * 60 * 1000 // set max cookie age to 24 hours
 }));
-
-const generateRandomString = function() {
-  let randomChar = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2).toUpperCase();
-  let output = '';
-  for (let i = 0; i < 6; i++) {
-    output += randomChar.charAt(Math.floor(Math.random() * randomChar.length));
-  }
-  return output;
-};
-
-const validateEmail = (email) => {
-  const form = /\S+@\S+\.\S+/;
-  return form.test(email); //validate email using regex in the form of "string@string.string"
-};
-
-const verifyEmail = (email) => {
-  for (let user in users) {
-    if (users[user].email === email) {
-      return users[user].id;
-    }
-  }
-  return false;
-};
-
-const verifyUserID = (userID) => {
-  for (let user in users) {
-    if (users[user].id === userID) {
-      return users[user].id;
-    }
-  }
-  return false;
-};
 
 const users = {
   'admin': {
@@ -72,6 +46,7 @@ const urlDatabase = {
   }
 };
 
+// THIS SECTION IS ALL GET REQUESTS
 
 app.get('/', (req, res) => {
   const templateVars = {
@@ -146,6 +121,8 @@ app.get('/u/:shortURL', (req, res) => {
     }
 });
 
+// THIS SECTION IS ALL POST REQUESTS
+
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   if(req.session.user_id) {
@@ -170,12 +147,19 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls", (req, res) => {
   if(req.session.user_id) {
     const shortURL = generateRandomString();
-    const longURL = req.body.longURL;
-    urlDatabase[shortURL] = {
-      'longURL': longURL,
-      'userID': req.session.user_id
+    let longURL = req.body.longURL;
+
+    if (validator.isURL(longURL)) { // check if input is a URL
+      // add http:// if input does not contain (http:// | https:// | ftp://)
+      longURL = validateURL(longURL);
+      urlDatabase[shortURL] = {
+        'longURL': longURL,
+        'userID': req.session.user_id
+      }
+        res.redirect(`/urls/${shortURL}`);
+    } else {
+      res.sendStatus(403);
     }
-    res.redirect(`/urls/${shortURL}`);
   } else {
     res.sendStatus(403);
   }
@@ -192,16 +176,14 @@ app.post('/register', (req, res) => {
   if (verifyEmail(email) || verifyUserID(userID)) {
     return res.sendStatus(403); // create a page to show message!
   };
-  if (validateEmail(email)) {
-    users[userID] = {
-      'id': userID,
-      'email': email,
-      'password': hashedPassword
-    };
-    req.session.user_id = userID;
-    console.log(`registered new User:`, JSON.stringify(users[userID]));
-    res.redirect('/urls');
+  users[userID] = {
+    'id': userID,
+    'email': email,
+    'password': hashedPassword
   };
+  req.session.user_id = userID;
+  console.log(`registered new User:`, JSON.stringify(users[userID]));
+  res.redirect('/urls');
 });
 
 app.post('/login', (req, res) => {
@@ -237,6 +219,8 @@ app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect('/urls');
 });
+
+// SET SERVER TO LISTEN TO SPECIFIED PORT
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
