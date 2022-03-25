@@ -31,6 +31,8 @@ Logged in users can create tiny URL, also add existing URLs in the bottom. Addit
 * bcrypt
 * body-parser
 * cookie-session
+* morgan
+* validator
 
 ## Getting Started
 * Install all dependencies using "npm install" command.
