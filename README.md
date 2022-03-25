@@ -2,6 +2,13 @@
 TinyApp is a full stack web application built with Node and Express that allows users to shorten long URLs (à la bit.ly but not as good!). This application was made for educational purpose.
 
 ---
+### KNOWN ISSUE
+* Unable to track users who are not logged in when using the tiny url (current state will display "Unknown User")
+* stored user id not encrypted
+
+
+
+
 ### Updates
 * Feature Updates
   * Added user data to '/urls/:shortURL'
@@ -15,6 +22,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ### Future Updates?
 * improve user tracking
+* improve user information database security
 
 
 ---
