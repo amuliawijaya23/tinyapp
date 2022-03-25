@@ -12,7 +12,7 @@ const {
   verifyUserID, 
   validateURL,
   getUserByEmail
-} = require('./helper');
+} = require('./helpers');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('tiny'));
@@ -186,7 +186,7 @@ app.post('/register', (req, res) => {
   if (!userID || !email || !password) {
     res.statusMessage = 'Please fill in the form!';
     res.status(403).send(res.statusMessage);
-  } else if (verifyEmail(email) || verifyUserID(userID)) {
+  } else if (getUserByEmail(email, users) || verifyUserID(userID, users)) {
     res.statusMessage = 'UserID or Email already exist!';
     res.status(403).send(res.statusMessage);
   } else {
@@ -206,10 +206,10 @@ app.post('/login', (req, res) => {
   const passwordInput = req.body.password;
   let userID = '';
 
-  if (!verifyEmail(usernameInput, users) && !verifyUserID(usernameInput, users)) {
+  if (!getUserByEmail(usernameInput, users) && !verifyUserID(usernameInput, users)) {
     res.statusMessage = 'UserID or Email does not exist!';
     res.status(403).send(res.statusMessage);
-  } else if (verifyEmail(usernameInput, users)) {
+  } else if (getUserByEmail(usernameInput, users)) {
       userID = getUserByEmail(usernameInput, users);
       if (bcrypt.compareSync(passwordInput, users[userID].password)) {
         req.session.user_id = userID;

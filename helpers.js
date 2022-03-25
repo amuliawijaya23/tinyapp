@@ -14,16 +14,6 @@ const getUserByEmail = (email, users) => {
   return undefined;
 };
 
-const verifyEmail = (emailInput, users) => {
-  for (let user in users) {
-    if (users[user].email === emailInput) {
-      return users[user].id;
-    } else {
-      return false;
-    }
-  }
-};
-
 const verifyUserID = (userIdInput, users) => {
   for (let user in users) {
     if (users[userIdInput]) {
@@ -47,7 +37,6 @@ const validateURL = (url) => {
 
 module.exports = {
   generateRandomString,
-  verifyEmail,
   verifyUserID,
   validateURL,
   getUserByEmail
