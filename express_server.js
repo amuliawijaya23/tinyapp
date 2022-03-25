@@ -7,9 +7,8 @@ const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const PORT = 8080;
 const {
-  generateRandomString, 
-  verifyEmail, 
-  verifyUserID, 
+  generateRandomString,
+  verifyUserID,
   validateURL,
   getUserByEmail
 } = require('./helpers');
@@ -56,9 +55,6 @@ const urlDatabase = {
 // THIS SECTION IS ALL GET REQUESTS
 
 app.get('/', (req, res) => {
-  const templateVars = {
-    username: req.session.user_id
-  }
   if (req.session.user_id) {
     res.redirect('/urls');
   } else {
@@ -69,7 +65,7 @@ app.get('/', (req, res) => {
 app.get("/register", (req, res) => {
   const templateVars = {
     username: req.session.user_id
-  }
+  };
   if (req.session.user_id) {
     res.redirect('/urls');
   } else {
@@ -80,8 +76,8 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
   const templateVars = {
     username: req.session.user_id
-  }
-  if(req.session.user_id) {
+  };
+  if (req.session.user_id) {
     res.redirect('urls');
   } else {
     res.render('login', templateVars);
@@ -91,7 +87,7 @@ app.get("/login", (req, res) => {
 app.get('/urls', (req, res) => {
   const templateVars = {
     urls: urlDatabase,
-    username: req.session.user_id 
+    username: req.session.user_id
   };
   res.render("urls_index", templateVars);
 });
@@ -100,7 +96,7 @@ app.get("/urls/new", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
     username: req.session.user_id
-  }
+  };
   if (req.session.user_id) {
     res.render("urls_new", templateVars);
   } else {
@@ -110,7 +106,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
-    shortURL: req.params.shortURL, 
+    shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]['longURL'],
     username: req.session.user_id
   };
@@ -123,34 +119,29 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get('/u/:shortURL', (req, res) => {
-  const templateVars = {
-    urls: urlDatabase,
-    username: req.session.user_id
-  }
   const shortURL = req.params.shortURL;
   let longURL = '';
-    if (urlDatabase[shortURL]) {
-      longURL = urlDatabase[shortURL]['longURL'];
-
-      for (const users of urlDatabase[shortURL]['visitors']) {
-        if (users === req.session.user_id) {
-          res.redirect(longURL);
-          urlDatabase[shortURL]['clicks'] += 1;
-        } else {
-          urlDatabase[shortURL]['visitors'].push(req.session.user_id);
-          urlDatabase[shortURL]['clicks'] += 1;
-        }
+  if (urlDatabase[shortURL]) {
+    longURL = urlDatabase[shortURL]['longURL'];
+    for (const users of urlDatabase[shortURL]['visitors']) {
+      if (users === req.session.user_id) {
+        res.redirect(longURL);
+        urlDatabase[shortURL]['clicks'] += 1;
+      } else {
+        urlDatabase[shortURL]['visitors'].push(req.session.user_id);
+        urlDatabase[shortURL]['clicks'] += 1;
       }
-    } else {
-      res.redirect('/urls');
     }
+  } else {
+    res.redirect('/urls');
+  }
 });
 
 app.get('/error', (req, res) => {
   const templateVars = {
     username: req.session.user_id,
     status: req.statusCode
-  }
+  };
   res.render('error', templateVars);
 });
 
@@ -158,11 +149,11 @@ app.get('/error', (req, res) => {
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  if(req.session.user_id === urlDatabase[req.params.shortURL].userID) {
+  if (req.session.user_id === urlDatabase[req.params.shortURL].userID) {
     if (urlDatabase[shortURL]) {
       urlDatabase[shortURL]['longURL'] = req.body.newURL;
       res.redirect(`/urls/${shortURL}`);
-    } 
+    }
   } else {
     res.statusMessage = 'Access Denied!';
     res.status(403).send(res.statusMessage);
@@ -172,7 +163,7 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
   if (req.session.user_id) {
     delete urlDatabase[req.params.shortURL];
-    res.redirect('/urls')
+    res.redirect('/urls');
   } else {
     res.statusMessage = 'Access Denied!';
     res.status(403).send(res.statusMessage);
@@ -180,7 +171,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  if(req.session.user_id) {
+  if (req.session.user_id) {
     const shortURL = generateRandomString();
     let longURL = req.body.longURL;
 
@@ -193,8 +184,8 @@ app.post("/urls", (req, res) => {
         'dateCreated': new Date().toLocaleDateString(),
         'visitors': [],
         'clicks': 0
-      }
-        res.redirect(`/urls/${shortURL}`);
+      };
+      res.redirect(`/urls/${shortURL}`);
     } else {
       res.statusMessage = 'Invalid URL!';
       res.status(403).send(res.statusMessage);
@@ -208,7 +199,7 @@ app.post("/urls", (req, res) => {
 app.post('/register', (req, res) => {
   const userID = req.body.userID;
   const email = req.body.email;
-  const password = req.body.password
+  const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
   if (!userID || !email || !password) {
     res.statusMessage = 'Please fill in the form!';
@@ -237,24 +228,24 @@ app.post('/login', (req, res) => {
     res.statusMessage = 'UserID or Email does not exist!';
     res.status(403).send(res.statusMessage);
   } else if (getUserByEmail(usernameInput, users)) {
-      userID = getUserByEmail(usernameInput, users);
-      if (bcrypt.compareSync(passwordInput, users[userID].password)) {
-        req.session.user_id = userID;
-        res.redirect('/urls');
-      } else {
-        res.statusMessage = 'UserID/Email and password does not match!';
-        res.status(403).send(res.statusMessage);
-      }
-    } else if (verifyUserID(usernameInput, users)) {
-      userID = usernameInput;
-      if(bcrypt.compareSync(passwordInput, users[userID].password)) {
-        req.session.user_id = userID;
-        res.redirect('/urls');
-      } else {
-        res.statusMessage = 'UserID/Email and password does not match!';
-        res.status(403).send(res.statusMessage);
-      }
+    userID = getUserByEmail(usernameInput, users);
+    if (bcrypt.compareSync(passwordInput, users[userID].password)) {
+      req.session.user_id = userID;
+      res.redirect('/urls');
+    } else {
+      res.statusMessage = 'UserID/Email and password does not match!';
+      res.status(403).send(res.statusMessage);
     }
+  } else if (verifyUserID(usernameInput, users)) {
+    userID = usernameInput;
+    if (bcrypt.compareSync(passwordInput, users[userID].password)) {
+      req.session.user_id = userID;
+      res.redirect('/urls');
+    } else {
+      res.statusMessage = 'UserID/Email and password does not match!';
+      res.status(403).send(res.statusMessage);
+    }
+  }
 });
 
 app.post("/logout", (req, res) => {

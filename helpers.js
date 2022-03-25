@@ -15,12 +15,10 @@ const getUserByEmail = (email, users) => {
 };
 
 const verifyUserID = (userIdInput, users) => {
-  for (let user in users) {
-    if (users[userIdInput]) {
-      return users[userIdInput].id
-    } else {
-      return false
-    }
+  if (users[userIdInput]) {
+    return users[userIdInput].id;
+  } else {
+    return false;
   }
 };
 
@@ -40,4 +38,4 @@ module.exports = {
   verifyUserID,
   validateURL,
   getUserByEmail
-}
+};
