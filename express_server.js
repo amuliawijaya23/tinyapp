@@ -123,7 +123,8 @@ app.get('/u/:shortURL', (req, res) => {
 
 app.get('/error', (req, res) => {
   const templateVars = {
-    username: req.session.user_id
+    username: req.session.user_id,
+    status: req.statusCode
   }
   res.render('error', templateVars);
 });
@@ -178,9 +179,11 @@ app.post('/register', (req, res) => {
   const password = req.body.password
   const hashedPassword = bcrypt.hashSync(password, 10);
   if (!userID || !email || !password) {
-    res.redirect('/error'); // create a page to show message!
+    res.statusMessage = 'Please fill in the form!';
+    res.status(403).send(res.statusMessage);
   } else if (verifyEmail(email) || verifyUserID(userID)) {
-    res.redirect('/error'); // create a page to show message!
+    res.statusMessage = 'UserID or Email already exist!';
+    res.status(403).send(res.statusMessage);
   } else {
     users[userID] = {
       'id': userID,
@@ -197,28 +200,33 @@ app.post('/login', (req, res) => {
   const usernameInput = req.body.username;
   const passwordInput = req.body.password;
   let userID = '';
+
   if (!verifyEmail(usernameInput, users) && !verifyUserID(usernameInput, users)) {
-    return res.sendStatus(403);
+    res.statusMessage = 'UserID or Email does not exist!';
+    res.status(403).send(res.statusMessage);
+
+
   } else if (verifyEmail(usernameInput, users)) {
     userID = verifyEmail(usernameInput, users);
-    if (bcrypt.compare(passwordInput, users[userID].password)) {
+
+    if (!bcrypt.compare(passwordInput, users[userID].password)) {
+      res.statusMessage = 'UserID/Email and password does not match!';
+      res.status(403).send(res.statusMessage);
+    } else {
       req.session.user_id = userID;
       res.redirect('/urls');
-    } else {
-      res.sendStatus(403); // create a page to show message!
     } 
+
   } else if (verifyUserID(usernameInput, users)) {
     userID = verifyUserID(usernameInput, users);
-    if(bcrypt.compare(passwordInput, users[userID].password)) {
+    if(!bcrypt.compare(passwordInput, users[userID].password)) {
+      res.statusMessage = 'UserID/Email and password does not match!';
+      res.status(403).send(res.statusMessage);
+    } else {
       req.session.user_id = userID;
       res.redirect('/urls');
-      return;
-    } else {
-      return res.sendStatus(403); // create a page to show message!
     }
-  } else {
-    res.sendStatus(403);
-  }
+  } 
 });
 
 app.post("/logout", (req, res) => {
