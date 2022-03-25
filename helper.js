@@ -7,7 +7,7 @@ const generateRandomString = function() {
   return output;
 };
 
-const verifyEmail = (email) => {
+const verifyEmail = (email, users) => {
   for (let user in users) {
     if (users[user].email === email) {
       return users[user].id;
@@ -16,7 +16,7 @@ const verifyEmail = (email) => {
   return false;
 };
 
-const verifyUserID = (userID) => {
+const verifyUserID = (userID, users) => {
   for (let user in users) {
     if (users[user].id === userID) {
       return users[user].id;

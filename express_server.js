@@ -18,7 +18,7 @@ app.use(morgan('tiny'));
 app.set('view engine', 'ejs');
 app.use(cookieSession({
   'name': 'session',
-  'keys': ['key1', 'key2', 'key3'],
+  'keys': ['secret', 'rahasia', 'key'],
   'maxAge': 24 * 60 * 60 * 1000 // set max cookie age to 24 hours
 }));
 
@@ -121,6 +121,13 @@ app.get('/u/:shortURL', (req, res) => {
     }
 });
 
+app.get('/error', (req, res) => {
+  const templateVars = {
+    username: req.session.user_id
+  }
+  res.render('error', templateVars);
+});
+
 // THIS SECTION IS ALL POST REQUESTS
 
 app.post("/urls/:shortURL", (req, res) => {
@@ -171,40 +178,37 @@ app.post('/register', (req, res) => {
   const password = req.body.password
   const hashedPassword = bcrypt.hashSync(password, 10);
   if (!userID || !email || !password) {
-    return res.sendStatus(403); // create a page to show message!
-  };
-  if (verifyEmail(email) || verifyUserID(userID)) {
-    return res.sendStatus(403); // create a page to show message!
-  };
-  users[userID] = {
-    'id': userID,
-    'email': email,
-    'password': hashedPassword
-  };
-  req.session.user_id = userID;
-  console.log(`registered new User:`, JSON.stringify(users[userID]));
-  res.redirect('/urls');
+    res.redirect('/error'); // create a page to show message!
+  } else if (verifyEmail(email) || verifyUserID(userID)) {
+    res.redirect('/error'); // create a page to show message!
+  } else {
+    users[userID] = {
+      'id': userID,
+      'email': email,
+      'password': hashedPassword
+    };
+    req.session.user_id = userID;
+    console.log(`registered new User:`, JSON.stringify(users[userID]));
+    res.redirect('/urls');
+  }
 });
 
 app.post('/login', (req, res) => {
   const usernameInput = req.body.username;
   const passwordInput = req.body.password;
   let userID = '';
-  if (!verifyEmail(usernameInput) && !verifyUserID(usernameInput)) {
+  if (!verifyEmail(usernameInput, users) && !verifyUserID(usernameInput, users)) {
     return res.sendStatus(403);
-  }
-  if (verifyEmail(usernameInput)) {
-    userID = verifyEmail(usernameInput);
+  } else if (verifyEmail(usernameInput, users)) {
+    userID = verifyEmail(usernameInput, users);
     if (bcrypt.compare(passwordInput, users[userID].password)) {
       req.session.user_id = userID;
       res.redirect('/urls');
-      return;
     } else {
-      return res.sendStatus(403); // create a page to show message!
-    }
-  }
-  if (verifyUserID(usernameInput)) {
-    userID = verifyUserID(usernameInput);
+      res.sendStatus(403); // create a page to show message!
+    } 
+  } else if (verifyUserID(usernameInput, users)) {
+    userID = verifyUserID(usernameInput, users);
     if(bcrypt.compare(passwordInput, users[userID].password)) {
       req.session.user_id = userID;
       res.redirect('/urls');
@@ -212,6 +216,8 @@ app.post('/login', (req, res) => {
     } else {
       return res.sendStatus(403); // create a page to show message!
     }
+  } else {
+    res.sendStatus(403);
   }
 });
 
