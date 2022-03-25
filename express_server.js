@@ -41,14 +41,18 @@ const urlDatabase = {
     'userID': "admin",
     'longURL': "http://www.lighthouselabs.ca",
     'dateCreated': "3/21/2022",
-    'visitors': ['admin'],
+    'visitors': {
+      'admin': {'clicks': 1, 'last click': '3/22/2022'}
+    },
     'clicks': 1
   },
   "9sm5xK": {
     'userID': "jamesBly",
     'longURL': "http://www.google.com",
     'dateCreated': "3/18/2022",
-    'visitors': ['jamesBly'],
+    'visitors': {
+      'jamesBly': {'clicks': 1, 'last click': '3/20/2022'}
+    },
     'clicks': 1
   }
 };
@@ -96,7 +100,7 @@ app.get("/login", (req, res) => {
 app.get('/urls', (req, res) => {
   const templateVars = {
     urls: urlDatabase,
-    username: req.session.userID
+    username: req.session.userID,
   };
   // template will show different page for non registered users
   res.render("urls_index", templateVars);
@@ -143,15 +147,14 @@ app.get('/u/:shortURL', (req, res) => {
     longURL = urlDatabase[shortURL]['longURL'];
     res.redirect(longURL);
     urlDatabase[shortURL]['clicks'] += 1; // add clicks by one
-    for (const visitor of urlDatabase[shortURL]['visitors']) {
-      // iterate over the visitors of the provided url
-      if (visitor === req.session.userID) {
-        // if user already exist in the array
-      } else {
-        // if user is not in the visitors array
-        urlDatabase[shortURL]['visitors'].push(req.session.userID);
+      if (!urlDatabase[shortURL]['visitors'][req.session.userID]) {
+        
+        // if user does not exist in the url's visitor database
+        urlDatabase[shortURL]['visitors'][req.session.userID] = {
+          'clicks': 1,
+          'last click': new Date().toLocaleDateString()
+        };
       }
-    }
   } else {
     // if provided short url does not exist
     res.redirect('/urls');
@@ -209,7 +212,7 @@ app.post("/urls", (req, res) => {
         'longURL': longURL,
         'userID': req.session.userID,
         'dateCreated': new Date().toLocaleDateString(),
-        'visitors': [],
+        'visitors': {},
         'clicks': 0
       };
       // redirect to new url page

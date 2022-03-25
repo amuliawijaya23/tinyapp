@@ -43,7 +43,7 @@
           <td><a href="/urls/<%= shortURL %>"> <%= shortURL %> </a></td>
           <td><a href="<%= urls[shortURL].longURL %>"> <%= urls[shortURL].longURL %> </a></td>
           <td><%= urls[shortURL].dateCreated %></td>
-          <td><%= urls[shortURL]['visitors'].length %></td>
+          <td><%= Object.keys(urls[shortURL]['visitors']).length %></td>
           <td><%= urls[shortURL]['clicks'] %></td>
           <td><form method="GET" action="/urls/<%= shortURL %>"><button type="submit" class="btn btn-primary">Edit</button></form></td>
           <td><form method="POST" action="/urls/<%= shortURL %>/delete"><button type="submit" class="btn btn-danger">Delete</button></form></td>

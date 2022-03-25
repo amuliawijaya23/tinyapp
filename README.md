@@ -7,6 +7,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 * Fixed bugs:
   * sending multiple response header
   * adds multiple clicks per visit
+  * adds multiple visitor per click
 
 ### Future Updates?
 #### Analytics

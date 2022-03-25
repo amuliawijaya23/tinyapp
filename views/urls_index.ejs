@@ -37,7 +37,7 @@
               <td><a href="/urls/<%= url %>"> <%= url %> </a></td>
               <td><a href="<%= urls[url].longURL %>"> <%= urls[url].longURL %> </a></td>
               <td><%= urls[url].dateCreated %></td>
-              <td><%= urls[url]['visitors'].length %></td>
+              <td><%= Object.keys(urls[url]['visitors']).length %></td>
               <td><%= urls[url]['clicks'] %></td>
               <td><form method="GET" action="/urls/<%= url %>"><button type="submit" class="btn btn-primary">Edit</button></form></td>
               <td><form method="POST" action="/urls/<%= url %>/delete"><button type="submit" class="btn btn-danger">Delete</button></form></td>
