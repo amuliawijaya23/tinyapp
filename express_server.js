@@ -40,12 +40,16 @@ const urlDatabase = {
   "b2xVn2": {
     'userID': "admin",
     'longURL': "http://www.lighthouselabs.ca",
-    'dateCreated': "3/21/2022"
+    'dateCreated': "3/21/2022",
+    'visitors': ['admin'],
+    'clicks': 1
   },
   "9sm5xK": {
     'userID': "jamesBly",
     'longURL': "http://www.google.com",
-    'dateCreated': "3/18/2022"
+    'dateCreated': "3/18/2022",
+    'visitors': ['jamesBly'],
+    'clicks': 1
   }
 };
 
@@ -119,11 +123,24 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get('/u/:shortURL', (req, res) => {
+  const templateVars = {
+    urls: urlDatabase,
+    username: req.session.user_id
+  }
   const shortURL = req.params.shortURL;
   let longURL = '';
     if (urlDatabase[shortURL]) {
       longURL = urlDatabase[shortURL]['longURL'];
-      res.redirect(longURL);
+
+      for (const users of urlDatabase[shortURL]['visitors']) {
+        if (users === req.session.user_id) {
+          res.redirect(longURL);
+          urlDatabase[shortURL]['clicks'] += 1;
+        } else {
+          urlDatabase[shortURL]['visitors'].push(req.session.user_id);
+          urlDatabase[shortURL]['clicks'] += 1;
+        }
+      }
     } else {
       res.redirect('/urls');
     }
@@ -173,7 +190,9 @@ app.post("/urls", (req, res) => {
       urlDatabase[shortURL] = {
         'longURL': longURL,
         'userID': req.session.user_id,
-        'dateCreated': new Date().toLocaleDateString()
+        'dateCreated': new Date().toLocaleDateString(),
+        'visitors': [],
+        'clicks': 0
       }
         res.redirect(`/urls/${shortURL}`);
     } else {
