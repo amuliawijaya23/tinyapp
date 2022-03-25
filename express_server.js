@@ -10,7 +10,8 @@ const {
   generateRandomString, 
   verifyEmail, 
   verifyUserID, 
-  validateURL
+  validateURL,
+  getUserByEmail
 } = require('./helper');
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -19,7 +20,7 @@ app.set('view engine', 'ejs');
 app.use(cookieSession({
   'name': 'session',
   'keys': ['secret', 'rahasia', 'key'],
-  'maxAge': 24 * 60 * 60 * 1000 // set max cookie age to 24 hours
+  'maxAge': 12 * 60 * 60 * 1000 // set max cookie age to 12 hours
 }));
 
 const users = {
@@ -139,7 +140,8 @@ app.post("/urls/:shortURL", (req, res) => {
       res.redirect(`/urls/${shortURL}`);
     } 
   } else {
-    res.sendStatus(403);
+    res.statusMessage = 'Access Denied!';
+    res.status(403).send(res.statusMessage);
   }
 });
 
@@ -148,7 +150,8 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     delete urlDatabase[req.params.shortURL];
     res.redirect('/urls')
   } else {
-    res.sendStatus(403);
+    res.statusMessage = 'Access Denied!';
+    res.status(403).send(res.statusMessage);
   }
 });
 
@@ -166,10 +169,12 @@ app.post("/urls", (req, res) => {
       }
         res.redirect(`/urls/${shortURL}`);
     } else {
-      res.sendStatus(403);
+      res.statusMessage = 'Invalid URL!';
+      res.status(403).send(res.statusMessage);
     }
   } else {
-    res.sendStatus(403);
+    res.statusMessage = 'Access Denied!';
+    res.status(403).send(res.statusMessage);
   }
 });
 
@@ -204,29 +209,25 @@ app.post('/login', (req, res) => {
   if (!verifyEmail(usernameInput, users) && !verifyUserID(usernameInput, users)) {
     res.statusMessage = 'UserID or Email does not exist!';
     res.status(403).send(res.statusMessage);
-
-
   } else if (verifyEmail(usernameInput, users)) {
-    userID = verifyEmail(usernameInput, users);
-
-    if (!bcrypt.compare(passwordInput, users[userID].password)) {
-      res.statusMessage = 'UserID/Email and password does not match!';
-      res.status(403).send(res.statusMessage);
-    } else {
-      req.session.user_id = userID;
-      res.redirect('/urls');
-    } 
-
-  } else if (verifyUserID(usernameInput, users)) {
-    userID = verifyUserID(usernameInput, users);
-    if(!bcrypt.compare(passwordInput, users[userID].password)) {
-      res.statusMessage = 'UserID/Email and password does not match!';
-      res.status(403).send(res.statusMessage);
-    } else {
-      req.session.user_id = userID;
-      res.redirect('/urls');
+      userID = getUserByEmail(usernameInput, users);
+      if (bcrypt.compareSync(passwordInput, users[userID].password)) {
+        req.session.user_id = userID;
+        res.redirect('/urls');
+      } else {
+        res.statusMessage = 'UserID/Email and password does not match!';
+        res.status(403).send(res.statusMessage);
+      }
+    } else if (verifyUserID(usernameInput, users)) {
+      userID = usernameInput;
+      if(bcrypt.compareSync(passwordInput, users[userID].password)) {
+        req.session.user_id = userID;
+        res.redirect('/urls');
+      } else {
+        res.statusMessage = 'UserID/Email and password does not match!';
+        res.status(403).send(res.statusMessage);
+      }
     }
-  } 
 });
 
 app.post("/logout", (req, res) => {

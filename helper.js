@@ -7,22 +7,31 @@ const generateRandomString = function() {
   return output;
 };
 
-const verifyEmail = (email, users) => {
-  for (let user in users) {
-    if (users[user].email === email) {
-      return users[user].id;
-    }
+const getUserByEmail = (email, users) => {
+  for (const user in users) {
+    if (users[user].email === email) return users[user].id;
   }
-  return false;
+  return undefined;
 };
 
-const verifyUserID = (userID, users) => {
+const verifyEmail = (emailInput, users) => {
   for (let user in users) {
-    if (users[user].id === userID) {
+    if (users[user].email === emailInput) {
       return users[user].id;
+    } else {
+      return false;
     }
   }
-  return false;
+};
+
+const verifyUserID = (userIdInput, users) => {
+  for (let user in users) {
+    if (users[userIdInput]) {
+      return users[userIdInput].id
+    } else {
+      return false
+    }
+  }
 };
 
 const validateURL = (url) => {
@@ -40,5 +49,6 @@ module.exports = {
   generateRandomString,
   verifyEmail,
   verifyUserID,
-  validateURL
+  validateURL,
+  getUserByEmail
 }
