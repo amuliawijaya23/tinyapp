@@ -39,11 +39,13 @@ const users = {
 const urlDatabase = {
   "b2xVn2": {
     'userID': "admin",
-    'longURL': "http://www.lighthouselabs.ca"
+    'longURL': "http://www.lighthouselabs.ca",
+    'dateCreated': "3/21/2022"
   },
   "9sm5xK": {
     'userID': "jamesBly",
-    'longURL': "http://www.google.com"
+    'longURL': "http://www.google.com",
+    'dateCreated': "3/18/2022"
   }
 };
 
@@ -108,7 +110,12 @@ app.get("/urls/:shortURL", (req, res) => {
     longURL: urlDatabase[req.params.shortURL]['longURL'],
     username: req.session.user_id
   };
-  res.render("urls_show", templateVars);
+  if (req.session.user_id === urlDatabase[req.params.shortURL].userID) {
+    res.render("urls_show", templateVars);
+  } else {
+    res.statusMessage = 'Access Denied!';
+    res.status(403).send(res.statusMessage);
+  }
 });
 
 app.get('/u/:shortURL', (req, res) => {
@@ -134,7 +141,7 @@ app.get('/error', (req, res) => {
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  if(req.session.user_id) {
+  if(req.session.user_id === urlDatabase[req.params.shortURL].userID) {
     if (urlDatabase[shortURL]) {
       urlDatabase[shortURL]['longURL'] = req.body.newURL;
       res.redirect(`/urls/${shortURL}`);
@@ -165,7 +172,8 @@ app.post("/urls", (req, res) => {
       longURL = validateURL(longURL);
       urlDatabase[shortURL] = {
         'longURL': longURL,
-        'userID': req.session.user_id
+        'userID': req.session.user_id,
+        'dateCreated': new Date().toLocaleDateString()
       }
         res.redirect(`/urls/${shortURL}`);
     } else {
