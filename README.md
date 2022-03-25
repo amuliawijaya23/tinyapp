@@ -4,10 +4,10 @@ TinyApp is a full stack web application built with Node and Express that allows 
 ---
 ### Updates
 * Feature Updates
-  * Added url data to '/urls/show'
-  * list of visitors
-  * total clicks of visitor
-  * date last clicked
+  * Added user data to '/urls/:shortURL'
+    * list of visitors
+    * total clicks of visitor
+    * date last clicked
 * Fixed bugs:
   * sending multiple response header
   * adds multiple clicks per visit
