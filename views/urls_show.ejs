@@ -26,28 +26,26 @@
       </div>
   </div>
   <div class="card">
-    <table class="table">
+    <table class="table text-center">
       <thead>
         <tr>
-          <th scope="col">Short URL</th>
-          <th scope="col">Long URL</th>
-          <th scope="col">Date Created</th>
-          <th scope="col">Unique Visitors</th>
-          <th scope="col">Clicks</th>
-          <th scope="col">Edit</th>
-          <th scope="col">Delete</th>
+          <th scope="col">User</th>
+          <th scope="col">Total Clicks</th>
+          <th scope="col">Last Click Date</th>
         </tr>
       </thead>
       <tbody>
+        <% for(let visitor in urls[shortURL].visitors) { %>
         <tr>
-          <td><a href="/urls/<%= shortURL %>"> <%= shortURL %> </a></td>
-          <td><a href="<%= urls[shortURL].longURL %>"> <%= urls[shortURL].longURL %> </a></td>
-          <td><%= urls[shortURL].dateCreated %></td>
-          <td><%= Object.keys(urls[shortURL]['visitors']).length %></td>
-          <td><%= urls[shortURL]['clicks'] %></td>
-          <td><form method="GET" action="/urls/<%= shortURL %>"><button type="submit" class="btn btn-primary">Edit</button></form></td>
-          <td><form method="POST" action="/urls/<%= shortURL %>/delete"><button type="submit" class="btn btn-danger">Delete</button></form></td>
+          <% if(visitor !== 'undefined') { %>
+          <td><%= visitor %></td>
+          <% }  else { %>
+            <td>Unknown User</td>
+          <% } %>
+          <td><%= urls[shortURL]['visitors'][visitor]['clicks'] %></td>
+          <td><%= urls[shortURL]['visitors'][visitor]['lastClick'] %></td>
         </tr>
+        <% } %>
       </tbody>
     </table>
   </div>

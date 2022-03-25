@@ -3,17 +3,20 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ---
 ### Updates
-* Added url data to '/urls/show'
+* Feature Updates
+  * Added url data to '/urls/show'
+  * list of visitors
+  * total clicks of visitor
+  * date last clicked
 * Fixed bugs:
   * sending multiple response header
   * adds multiple clicks per visit
   * adds multiple visitor per click
 
 ### Future Updates?
-#### Analytics
-* list of visitors
-* total clicks of visitor
-* date last clicked
+* improve user tracking
+
+
 ---
 ## Getting Started
 * Install all dependencies using "npm install" command.
@@ -25,18 +28,14 @@ TinyApp is a full stack web application built with Node and Express that allows 
 ### Sign In Page
 !["Sign in page for TinyApp"](https://github.com/amuliawijaya23/tinyapp/blob/main/docs/tinyapp_signin.png?raw=true)
 Created a sign in page, takes either email or user id. 
-
 Users who are not logged in will be redirected to this page when trying to access the URLs page. 
-
 Logged in users will be redirected to their myURLs page when trying to access the sign in page.
 
 ---
 ### Sign Up Page
 !["Sign Up page for TinyApp"](https://github.com/amuliawijaya23/tinyapp/blob/main/docs/tinyapp_register.png?raw=true)
 Created a sign up page to register users and allow user to set their own user id.
-
 Users who are not logged in will be redirected to this page when trying to access the URLs page. 
-
 Logged in users will be redirected to their myURLs page when trying to access the sign in page.
 
 ---

@@ -42,7 +42,7 @@ const urlDatabase = {
     'longURL': "http://www.lighthouselabs.ca",
     'dateCreated': "3/21/2022",
     'visitors': {
-      'admin': {'clicks': 1, 'last click': '3/22/2022'}
+      'admin': {'clicks': 1, 'lastClick': '3/22/2022'}
     },
     'clicks': 1
   },
@@ -51,7 +51,7 @@ const urlDatabase = {
     'longURL': "http://www.google.com",
     'dateCreated': "3/18/2022",
     'visitors': {
-      'jamesBly': {'clicks': 1, 'last click': '3/20/2022'}
+      'jamesBly': {'clicks': 1, 'lastClick': '3/20/2022'}
     },
     'clicks': 1
   }
@@ -147,13 +147,16 @@ app.get('/u/:shortURL', (req, res) => {
     longURL = urlDatabase[shortURL]['longURL'];
     res.redirect(longURL);
     urlDatabase[shortURL]['clicks'] += 1; // add clicks by one
+
       if (!urlDatabase[shortURL]['visitors'][req.session.userID]) {
-        
         // if user does not exist in the url's visitor database
         urlDatabase[shortURL]['visitors'][req.session.userID] = {
           'clicks': 1,
-          'last click': new Date().toLocaleDateString()
-        };
+          'lastClick': new Date().toLocaleDateString()
+        }
+      } else {
+        urlDatabase[shortURL][req.session.userID]['clicks'] += 1;
+        urlDatabase[shortURL][req.session.userID]['lastClick'] = new Date().toLocaleDateString();
       }
   } else {
     // if provided short url does not exist
